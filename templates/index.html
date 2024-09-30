@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Todo List for {{ current_user.username }}</h1>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Form to add new task -->
+        <form method="POST" action="/">
+            {{ form.hidden_tag() }}
+            <p>{{ form.task.label }} {{ form.task }}</p>
+            <p>{{ form.submit }}</p>
+        </form>
+
+        <!-- Task List -->
+        <ul>
+            {% for task in tasks %}
+                <li class="{{ 'complete' if task.complete }}">
+                    {{ task.task }}
+                    {% if not task.complete %}
+                        <a href="{{ url_for('complete_task', task_id=task.id) }}">Mark Complete</a>
+                    {% endif %}
+                    <a href="{{ url_for('delete_task', task_id=task.id) }}">Delete</a>
+                </li>
+            {% else %}
+                <li>No tasks found. Add a task above.</li>
+            {% endfor %}
+        </ul>
+
+        <p><a href="{{ url_for('logout') }}">Logout</a></p>
+    </div>
+</body>
+</html>
